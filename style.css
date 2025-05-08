@@ -1,12 +1,21 @@
-body {
-    background-color: black;
-    padding: 0 0 0;
-    margin: 0 0 0;
-}
-
 @font-face {
     font-family: CustomPixelated;
     src: url('PixeloidSans-mLxMm.ttf') format('truetype');
+}
+
+body {
+    background-color: black;
+    margin: 0 0 0;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.main-element {
+    flex-grow: 1;
 }
 
 .title {
@@ -38,6 +47,17 @@ body {
     color: orange;
 }
 
+.game-container {
+    display: flex;
+    justify-content: space-around;
+}
+
+.game {
+    background-color: white;
+    height: fit-content;
+    margin: auto 0 0;
+}
+
 .desciption {
     font: 20px CustomPixelated;
     color: white;
@@ -47,9 +67,5 @@ body {
 .footer {
     font: 20px CustomPixelated;
     color: yellow;
-    position: absolute;
-    bottom: 0;
     text-align: center;
-    width: 100%;
-    margin: 0 0 0;
 }
