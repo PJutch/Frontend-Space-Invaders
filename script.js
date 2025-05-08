@@ -12,7 +12,10 @@ const canvas = document.querySelector('.game');
 const ctx = canvas.getContext('2d');
 
 class Player {
-    x = canvas.width / 2;
+    size = 50;
+    fillStyle = 'rgb(255 255 255)';
+
+    x = canvas.width / 2 - this.size / 2;
     y = canvas.height - 100;
 
     speed = 2;
@@ -20,9 +23,6 @@ class Player {
 
     shotCooldownRemaining = 0;
     shotCooldown = 60;
-
-    size = 50;
-    fillStyle = 'rgb(255 255 255)';
 
     alive = true;
 
@@ -70,7 +70,7 @@ class PlayerBullet {
         this.y = y - this.size / 2;
     }
 
-    update() {
+    update(entities) {
         this.y -= this.speed;
         if (this.y < 0) {
             this.alive = false;
@@ -78,8 +78,32 @@ class PlayerBullet {
     }
 }
 
+let enemySpeed = 0;
+
+class MovingDownEnemy {
+    x;
+    y;
+
+    size = 50;
+    fillStyle = 'rgb(255, 0, 0)';
+
+    alive = true;
+
+    constructor(x, y) {
+        this.x = x - this.size / 2;
+        this.y = y - this.size / 2;
+    }
+
+    update(entities) {
+        this.y += enemySpeed;
+        if (this.y > canvas.height) {
+            this.alive = false;
+        }
+    }
+}
+
 const player = new Player();
-let entities = [player];
+let entities = [player, new MovingDownEnemy(canvas.width / 2, 30)];
 
 function drawFrame() {
     ctx.fillStyle = 'rgb(0 0 127)';
@@ -93,6 +117,8 @@ function drawFrame() {
     }
 
     entities = entities.filter((entity) => entity.alive);
+
+    enemySpeed += 0.001;
 
     requestAnimationFrame(drawFrame);
 }
