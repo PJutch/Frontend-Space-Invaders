@@ -31,8 +31,12 @@ class Player {
     shotCooldownRemaining = 0;
     shotCooldown = 60;
 
-    alive = true;
+    dead = false;
     isPlayerSide = true;
+    invulnerable = false;
+
+    respawnCooldownRemaining = 0;
+    respawnCooldown = 120;
 
     update(entities) {
         if (isKeyDown['d'] && !isKeyDown['a']) {
@@ -61,11 +65,32 @@ class Player {
         }
 
         for (let entity of entities) {
-            if (areColliding(this, entity) && !entity.isPlayerSide) {
-                this.alive = false;
-                entity.alive = false;
+            if (!this.invulnerable && !entity.invulnerable
+             && areColliding(this, entity) && !entity.isPlayerSide) {
+                console.log('Dead');
+                this.dead = true;
+                entity.dead = true;
             }
         }
+
+        if (this.respawnCooldownRemaining <= 0 || this.respawnCooldownRemaining / 10 % 2 == 0) {
+            ctx.fillStyle = this.fillStyle;
+            ctx.fillRect(this.x, this.y, this.size, this.size);
+        }
+
+        if (this.respawnCooldownRemaining <= 0) {
+            console.log(this.respawnCooldownRemaining);
+            this.invulnerable = false;
+        } else {
+            --this.respawnCooldownRemaining;
+        }
+    }
+
+    onDeath() {
+        document.querySelector('.live:not(:has(~ .live))').remove();
+        this.dead = false;
+        this.invulnerable = true;
+        this.respawnCooldownRemaining = this.respawnCooldown;
     }
 };
 
@@ -78,8 +103,9 @@ class PlayerBullet {
     size = 20;
     fillStyle = 'rgb(255 255 255)';
 
-    alive = true;
+    dead = false;
     isPlayerSide = true;
+    invulnerable = false;
 
     constructor(x, y) {
         this.x = x - this.size / 2;
@@ -89,9 +115,14 @@ class PlayerBullet {
     update(entities) {
         this.y -= this.speed;
         if (this.y < 0) {
-            this.alive = false;
+            this.dead = true;
         }
+
+        ctx.fillStyle = this.fillStyle;
+        ctx.fillRect(this.x, this.y, this.size, this.size);
     }
+
+    onDeath() {}
 }
 
 let enemySpeed = 0;
@@ -103,8 +134,9 @@ class MovingDownEnemy {
     size = 50;
     fillStyle = 'rgb(255, 0, 0)';
 
-    alive = true;
+    dead = false;
     isPlayerSide = false;
+    invulnerable = false;
 
     constructor(x, y) {
         this.x = x - this.size / 2;
@@ -114,16 +146,22 @@ class MovingDownEnemy {
     update(entities) {
         this.y += enemySpeed;
         if (this.y > canvas.height) {
-            this.alive = false;
+            this.dead = true;
         }
 
         for (let entity of entities) {
-            if (areColliding(this, entity) && entity.isPlayerSide) {
-                this.alive = false;
-                entity.alive = false;
+            if (!entity.invulnerable
+             && areColliding(this, entity) && entity.isPlayerSide) {
+                this.dead = true;
+                entity.dead = true;
             }
         }
+
+        ctx.fillStyle = this.fillStyle;
+        ctx.fillRect(this.x, this.y, this.size, this.size);
     }
+
+    onDeath() {}
 }
 
 const player = new Player();
@@ -135,12 +173,14 @@ function drawFrame() {
 
     for (let entity of entities) {
         entity.update(entities);
-
-        ctx.fillStyle = entity.fillStyle;
-        ctx.fillRect(entity.x, entity.y, entity.size, entity.size);
     }
 
-    entities = entities.filter((entity) => entity.alive);
+    for (let entity of entities) {
+        if (entity.dead) {
+            entity.onDeath();
+        }
+    }
+    entities = entities.filter((entity) => !entity.dead);
 
     enemySpeed += 0.001;
 

@@ -50,11 +50,26 @@ body {
 .game-container {
     display: flex;
     justify-content: space-around;
+    position: relative;
 }
 
 .game {
     height: fit-content;
     margin: auto 0 0;
+}
+
+.lives {
+    left: 20;
+    top: 10;
+    position: absolute;
+    display: flex;
+}
+
+.live {
+    width: 30px;
+    height: 30px;
+    background-color: red;
+    margin-right: 20px;
 }
 
 .desciption {
