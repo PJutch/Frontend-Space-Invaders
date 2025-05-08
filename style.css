@@ -1,0 +1,33 @@
+body {
+    background-color: black;
+}
+
+@font-face {
+    font-family: CustomPixelated;
+    src: url('PixeloidSans-mLxMm.ttf') format('truetype');
+}
+
+.title {
+    font: 70px CustomPixelated;
+    color: yellow;
+    text-align: center
+}
+
+.nav-link {
+    font: 30px CustomPixelated;
+    color: yellow;
+}
+
+.desciption {
+    font: 20px CustomPixelated;
+    color: white;
+}
+
+.current-nav-link, .nav-link:hover {
+    font-size: 40px;
+}
+
+.nav-link:active {
+    font-size: 40px;
+    color: orange;
+}
