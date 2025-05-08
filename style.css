@@ -10,17 +10,20 @@ body {
 .title {
     font: 70px CustomPixelated;
     color: yellow;
-    text-align: center
+    text-align: center;
+    margin: 0;
+}
+
+.nav-menu {
+    display: flex;
+    justify-content: space-between;
 }
 
 .nav-link {
     font: 30px CustomPixelated;
     color: yellow;
-}
-
-.desciption {
-    font: 20px CustomPixelated;
-    color: white;
+    width: 300px;
+    text-align: center;
 }
 
 .current-nav-link, .nav-link:hover {
@@ -30,4 +33,9 @@ body {
 .nav-link:active {
     font-size: 40px;
     color: orange;
+}
+
+.desciption {
+    font: 20px CustomPixelated;
+    color: white;
 }
