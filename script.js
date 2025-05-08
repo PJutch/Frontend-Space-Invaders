@@ -11,6 +11,13 @@ onkeyup = (e) => {
 const canvas = document.querySelector('.game');
 const ctx = canvas.getContext('2d');
 
+function areColliding(firstEntity, secondEntity) {
+    return (firstEntity.x <= secondEntity.x && secondEntity.x <= firstEntity.x + firstEntity.size
+         || secondEntity.x <= firstEntity.x && firstEntity.x <= secondEntity.x + firstEntity.size)
+        && (firstEntity.y <= secondEntity.y && secondEntity.y <= firstEntity.y + firstEntity.size
+         || secondEntity.y <= firstEntity.y && firstEntity.y <= secondEntity.y + firstEntity.size);
+}
+
 class Player {
     size = 50;
     fillStyle = 'rgb(255 255 255)';
@@ -25,6 +32,7 @@ class Player {
     shotCooldown = 60;
 
     alive = true;
+    isPlayerSide = true;
 
     update(entities) {
         if (isKeyDown['d'] && !isKeyDown['a']) {
@@ -51,6 +59,13 @@ class Player {
         if (this.shotCooldownRemaining) {
             --this.shotCooldownRemaining;
         }
+
+        for (let entity of entities) {
+            if (areColliding(this, entity) && !entity.isPlayerSide) {
+                this.alive = false;
+                entity.alive = false;
+            }
+        }
     }
 };
 
@@ -64,6 +79,7 @@ class PlayerBullet {
     fillStyle = 'rgb(255 255 255)';
 
     alive = true;
+    isPlayerSide = true;
 
     constructor(x, y) {
         this.x = x - this.size / 2;
@@ -88,6 +104,7 @@ class MovingDownEnemy {
     fillStyle = 'rgb(255, 0, 0)';
 
     alive = true;
+    isPlayerSide = false;
 
     constructor(x, y) {
         this.x = x - this.size / 2;
@@ -99,6 +116,13 @@ class MovingDownEnemy {
         if (this.y > canvas.height) {
             this.alive = false;
         }
+
+        for (let entity of entities) {
+            if (areColliding(this, entity) && entity.isPlayerSide) {
+                this.alive = false;
+                entity.alive = false;
+            }
+        }
     }
 }
 
@@ -109,7 +133,7 @@ function drawFrame() {
     ctx.fillStyle = 'rgb(0 0 127)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    for (entity of entities) {
+    for (let entity of entities) {
         entity.update(entities);
 
         ctx.fillStyle = entity.fillStyle;
