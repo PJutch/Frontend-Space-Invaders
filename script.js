@@ -86,7 +86,7 @@ class Player {
     }
 
     onDeath() {
-        document.querySelector('.live:not(:has(~ .live))').remove();
+        --lives;
         this.dead = false;
         this.invulnerable = true;
         this.respawnCooldownRemaining = this.respawnCooldown;
@@ -213,6 +213,8 @@ class ShootingDownEnemy {
     onDeath() {}
 }
 
+let lives = 3;
+
 const player = new Player();
 let entities = [player, new ShootingDownEnemy(canvas.width / 2, 30)];
 
@@ -230,6 +232,20 @@ function drawFrame() {
         }
     }
     entities = entities.filter((entity) => !entity.dead);
+
+    while (document.getElementsByClassName('live').length > lives) {
+        document.querySelector('.live:not(:has(~ .live))').remove();
+    }
+    while (document.getElementsByClassName('live').length < lives) {
+        let newLiveIndicator = new HTMLDivElement();
+        newLiveIndicator.classList.add('live')
+        document.querySelector('.lives').appendChild(newLiveIndicator);
+    }
+
+    if (lives <= 0) {
+        lives = 3; // prevent trying to change location multiple times
+        window.location = 'gameover.html';
+    }
 
     enemySpeed += 0.001;
 

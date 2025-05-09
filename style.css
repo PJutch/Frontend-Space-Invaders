@@ -3,6 +3,11 @@
     src: url('PixeloidSans-mLxMm.ttf') format('truetype');
 }
 
+@font-face {
+    font-family: CustomPixelatedBold;
+    src: url('PixeloidSansBold-PKnYd.ttf') format('truetype');
+}
+
 body {
     background-color: black;
     margin: 0 0 0;
@@ -82,4 +87,39 @@ body {
     font: 20px CustomPixelated;
     color: yellow;
     text-align: center;
+}
+
+.gameover {
+    font: 200px CustomPixelatedBold;
+    color: yellow;
+    text-align: center;
+    margin: 100px 0 40px
+}
+
+.save-score-form {
+    width: fit-content;
+    margin: 0 auto 0;
+}
+
+.input-label {
+    font: 50px CustomPixelated;
+    color: yellow;
+}
+
+.text-field {
+    font: 40px CustomPixelated;
+    color: yellow;
+    background-color: black;
+    border: 0;
+    border-bottom: 2px solid yellow;
+    outline: 0;
+}
+
+.submit-button {
+    font: 40px CustomPixelated;
+    color: yellow;
+    background-color: black;
+    border: 0;
+    margin: 10px auto 0;
+    display: block;
 }
