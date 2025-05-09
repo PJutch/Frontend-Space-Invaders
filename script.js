@@ -26,6 +26,15 @@ function areColliding(firstEntity, secondEntity) {
         && areCollidingY(firstEntity, secondEntity);
 }
 
+let isGameover = false;
+
+function gameover() {
+    if (!isGameover) {
+        window.location.href = 'gameover.html';
+    }
+    isGameover = true;
+}
+
 class Player {
     size = 50;
     fillStyle = 'rgb(255 255 255)';
@@ -96,6 +105,10 @@ class Player {
 
     onDeath() {
         --lives;
+        if (lives <= 0) {
+            gameover();
+        }
+
         this.dead = false;
         this.invulnerable = true;
         this.respawnCooldownRemaining = this.respawnCooldown;
@@ -138,12 +151,13 @@ class Bullet {
 }
 
 let enemySpeed = 0;
+const enemySize = 50;
 
 class MovingDownEnemy {
     x;
     y;
 
-    size = 50;
+    size = enemySize;
     fillStyle = 'rgb(255, 0, 0)';
 
     dead = false;
@@ -159,6 +173,7 @@ class MovingDownEnemy {
     update(entities) {
         this.y += enemySpeed;
         if (this.y > canvas.height) {
+            gameover();
             this.dead = true;
         }
 
@@ -181,7 +196,7 @@ class ShootingDownEnemy {
     x;
     y;
 
-    size = 50;
+    size = enemySize;
     fillStyle = 'rgb(255, 0, 0)';
 
     dead = false;
@@ -200,6 +215,7 @@ class ShootingDownEnemy {
     update(entities) {
         this.y += enemySpeed;
         if (this.y > canvas.height) {
+            gameover();
             this.dead = true;
         }
 
@@ -239,7 +255,16 @@ class ShootingDownEnemy {
 let lives = 3;
 
 const player = new Player();
-let entities = [player, new ShootingDownEnemy(canvas.width / 2, 100), new MovingDownEnemy(canvas.width / 2, 30)];
+let entities = [player];
+
+function areThereEnemies() {
+    for (let entity of entities) {
+        if (!entity.isPlayerSide && entity.isSolid) {
+            return true;
+        }
+    }
+    return false;
+}
 
 function drawFrame() {
     ctx.fillStyle = 'rgb(0 0 127)';
@@ -261,16 +286,28 @@ function drawFrame() {
     }
     while (document.getElementsByClassName('live').length < lives) {
         let newLiveIndicator = new HTMLDivElement();
-        newLiveIndicator.classList.add('live')
+        newLiveIndicator.classList.add('live');
         document.querySelector('.lives').appendChild(newLiveIndicator);
     }
 
-    if (lives <= 0) {
-        lives = 3; // prevent trying to change location multiple times
-        window.location = 'gameover.html';
+    if (!areThereEnemies()) {
+        for (let i = 0; i < 3; ++i) {
+            let maxJ = Math.floor(canvas.width / enemySize);
+            for (let j = 0; j < maxJ; ++j) {
+                if (j == 2 || j == maxJ - 3) {
+                    entities.push(new ShootingDownEnemy(
+                        j * enemySize + enemySize / 2, 
+                        enemySize / 2 + i * (enemySize + 10)));
+                } else {
+                    entities.push(new MovingDownEnemy(
+                        j * enemySize + enemySize / 2, 
+                        enemySize / 2 + i * (enemySize + 10)));
+                }
+            }
+        }
     }
 
-    enemySpeed += 0.001;
+    enemySpeed += 0.0001;
 
     requestAnimationFrame(drawFrame);
 }
