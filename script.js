@@ -56,7 +56,7 @@ class Player {
         }
     
         if (isKeyDown['KeyW'] && this.shotCooldownRemaining <= 0) {
-            entities.push(new PlayerBullet(this.x + this.size / 2, this.y + this.size / 2));
+            entities.push(new Bullet(this.x + this.size / 2, this.y + this.size / 2, true));
             this.shotCooldownRemaining = this.shotCooldown;
         }
         
@@ -93,27 +93,30 @@ class Player {
     }
 };
 
-class PlayerBullet {
+class Bullet {
     x;
     y;
 
-    speed = 5;
+    velocity;
 
     size = 20;
     fillStyle = 'rgb(255 255 255)';
 
     dead = false;
-    isPlayerSide = true;
+    isPlayerSide;
     invulnerable = false;
 
-    constructor(x, y) {
+    constructor(x, y, isPlayerSide) {
         this.x = x - this.size / 2;
         this.y = y - this.size / 2;
+        this.isPlayerSide = isPlayerSide;
+        this.velocity = (this.isPlayerSide ? -1 : 1) * 5;
     }
 
     update(entities) {
-        this.y -= this.speed;
-        if (this.y < 0) {
+        this.y += this.velocity;
+
+        if (this.y < 0 || this.y > canvas.height) {
             this.dead = true;
         }
 
@@ -163,8 +166,55 @@ class MovingDownEnemy {
     onDeath() {}
 }
 
+class ShootingDownEnemy {
+    x;
+    y;
+
+    size = 50;
+    fillStyle = 'rgb(255, 0, 0)';
+
+    dead = false;
+    isPlayerSide = false;
+    invulnerable = false;
+
+    shotCooldown = 180;
+    shotCooldownRemaining = this.shotCooldown / 2;
+
+    constructor(x, y) {
+        this.x = x - this.size / 2;
+        this.y = y - this.size / 2;
+    }
+
+    update(entities) {
+        this.y += enemySpeed;
+        if (this.y > canvas.height) {
+            this.dead = true;
+        }
+
+        if (this.shotCooldownRemaining <= 0) {
+            this.shotCooldownRemaining = this.shotCooldown;
+            entities.push(new Bullet(this.x + this.size / 2, this.y + this.size / 2, false))
+        } else {
+            this.shotCooldownRemaining -= enemySpeed;
+        }
+
+        for (let entity of entities) {
+            if (!entity.invulnerable
+             && areColliding(this, entity) && entity.isPlayerSide) {
+                this.dead = true;
+                entity.dead = true;
+            }
+        }
+
+        ctx.fillStyle = this.fillStyle;
+        ctx.fillRect(this.x, this.y, this.size, this.size);
+    }
+
+    onDeath() {}
+}
+
 const player = new Player();
-let entities = [player, new MovingDownEnemy(canvas.width / 2, 30)];
+let entities = [player, new ShootingDownEnemy(canvas.width / 2, 30)];
 
 function drawFrame() {
     ctx.fillStyle = 'rgb(0 0 127)';
