@@ -1,11 +1,11 @@
 const isKeyDown = {}
 
 onkeydown = (e) => {
-    isKeyDown[e.key] = true;
+    isKeyDown[e.code] = true;
 };
 
 onkeyup = (e) => {
-    isKeyDown[e.key] = false;
+    isKeyDown[e.code] = false;
 }
 
 const canvas = document.querySelector('.game');
@@ -39,11 +39,11 @@ class Player {
     respawnCooldown = 120;
 
     update(entities) {
-        if (isKeyDown['d'] && !isKeyDown['a']) {
+        if (isKeyDown['KeyD'] && !isKeyDown['KeyA']) {
             this.xVelocity = this.speed;       
-        } else if (isKeyDown['a'] && !isKeyDown['d']) {
+        } else if (isKeyDown['KeyA'] && !isKeyDown['KeyD']) {
             this.xVelocity = -this.speed;
-        } else if (!isKeyDown['d'] && !isKeyDown['a']) {
+        } else if (!isKeyDown['KeyD'] && !isKeyDown['KeyA']) {
             this.xVelocity = 0;
         }
     
@@ -55,7 +55,7 @@ class Player {
             this.x = 0;
         }
     
-        if (isKeyDown['w'] && this.shotCooldownRemaining <= 0) {
+        if (isKeyDown['KeyW'] && this.shotCooldownRemaining <= 0) {
             entities.push(new PlayerBullet(this.x + this.size / 2, this.y + this.size / 2));
             this.shotCooldownRemaining = this.shotCooldown;
         }
@@ -79,7 +79,6 @@ class Player {
         }
 
         if (this.respawnCooldownRemaining <= 0) {
-            console.log(this.respawnCooldownRemaining);
             this.invulnerable = false;
         } else {
             --this.respawnCooldownRemaining;
