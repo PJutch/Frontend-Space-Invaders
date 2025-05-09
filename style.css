@@ -1,11 +1,12 @@
 @font-face {
-    font-family: CustomPixelated;
-    src: url('PixeloidSans-mLxMm.ttf') format('truetype');
+    font-family: PixeloidSans;
+    src: url('fonts/PixeloidSans.ttf') format('truetype');
 }
 
 @font-face {
-    font-family: CustomPixelatedBold;
-    src: url('PixeloidSansBold-PKnYd.ttf') format('truetype');
+    font-family: PixeloidSans;
+    src: url('fonts/PixeloidSansBold.ttf') format('truetype');
+    font-weight: bold;
 }
 
 body {
@@ -24,7 +25,8 @@ body {
 }
 
 .title {
-    font: 70px CustomPixelated;
+    font: bold 70px PixeloidSans;
+
     color: yellow;
     text-align: center;
     margin: 0;
@@ -37,7 +39,7 @@ body {
 }
 
 .nav-link {
-    font: 30px CustomPixelated;
+    font: 30px PixeloidSans;
     color: yellow;
     width: 300px;
     text-align: center;
@@ -78,19 +80,19 @@ body {
 }
 
 .desciption {
-    font: 20px CustomPixelated;
+    font: 20px PixeloidSans;
     color: white;
     padding: 0 10px 0;
 }
 
 .footer {
-    font: 20px CustomPixelated;
+    font: 20px PixeloidSans;
     color: yellow;
     text-align: center;
 }
 
 .gameover {
-    font: 200px CustomPixelatedBold;
+    font: bold 200px PixeloidSans;
     color: yellow;
     text-align: center;
     margin: 100px 0 40px
@@ -102,12 +104,12 @@ body {
 }
 
 .input-label {
-    font: 50px CustomPixelated;
+    font: 50px PixeloidSans;
     color: yellow;
 }
 
 .text-field {
-    font: 40px CustomPixelated;
+    font: 40px PixeloidSans;
     color: yellow;
     background-color: black;
     border: 0;
@@ -116,7 +118,7 @@ body {
 }
 
 .submit-button {
-    font: 40px CustomPixelated;
+    font: 40px PixeloidSans;
     color: yellow;
     background-color: black;
     border: 0;
