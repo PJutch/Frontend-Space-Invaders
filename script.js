@@ -12,14 +12,34 @@ const canvas = document.querySelector('.game');
 const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 
+function getLeft(entity) {
+    return entity.x - entity.sizeX / 2;
+}
+
+function getRight(entity) {
+    return entity.x + entity.sizeX / 2;
+}
+
+function getTop(entity) {
+    return entity.y - entity.sizeY / 2;
+}
+
+function getBottom(entity) {
+    return entity.y + entity.sizeY / 2;
+}
+
+function isBetween(value, start, end) {
+    return start <= value && value < end;
+}
+
 function areCollidingX(firstEntity, secondEntity) {
-    return firstEntity.x <= secondEntity.x && secondEntity.x < firstEntity.x + firstEntity.sizeX
-        || secondEntity.x <= firstEntity.x && firstEntity.x < secondEntity.x + secondEntity.sizeX;
+    return isBetween(getLeft(firstEntity), getLeft(secondEntity), getRight(secondEntity))
+        || isBetween(getLeft(secondEntity), getLeft(firstEntity), getRight(firstEntity));
 }
 
 function areCollidingY(firstEntity, secondEntity) {
-   return firstEntity.y <= secondEntity.y && secondEntity.y < firstEntity.y + firstEntity.sizeY
-       || secondEntity.y <= firstEntity.y && firstEntity.y < secondEntity.y + secondEntity.sizeY;
+   return isBetween(getTop(firstEntity), getTop(secondEntity), getBottom(secondEntity))
+       || isBetween(getTop(secondEntity), getTop(firstEntity), getBottom(firstEntity));
 }
 
 function areColliding(firstEntity, secondEntity) {
@@ -69,15 +89,15 @@ class Player {
         }
     
         this.x += this.xVelocity;
-        if (this.x > canvas.width - this.sizeX) {
-            this.x = canvas.width - this.sizeX;
+        if (getRight(this) > canvas.width) {
+            this.x = canvas.width - this.sizeX / 2;
         }
         if (this.x < 0) {
             this.x = 0;
         }
     
         if (isKeyDown['KeyW'] && this.shotCooldownRemaining <= 0) {
-            entities.push(new Bullet(this.x + this.sizeX / 2, this.y + this.sizeY / 2, true));
+            entities.push(new Bullet(this.x, this.y, true));
             this.shotCooldownRemaining = Player.shotCooldown;
         }
         
@@ -96,7 +116,7 @@ class Player {
 
         if (this.respawnCooldownRemaining <= 0 
          || this.respawnCooldownRemaining / 10 % 2 == 0) {
-            ctx.drawImage(Player.sprite, this.x, this.y, this.sizeX, this.sizeY);
+            ctx.drawImage(Player.sprite, getLeft(this), getTop(this), this.sizeX, this.sizeY);
         }
 
         if (this.respawnCooldownRemaining <= 0) {
@@ -132,8 +152,8 @@ class Bullet {
     isSolid = false;
 
     constructor(x, y, isPlayerSide) {
-        this.x = x - this.sizeX / 2;
-        this.y = y - this.sizeY / 2;
+        this.x = x;
+        this.y = y;
         this.isPlayerSide = isPlayerSide;
         this.velocity = (this.isPlayerSide ? -1 : 1) * 5;
     }
@@ -146,7 +166,7 @@ class Bullet {
         }
 
         ctx.fillStyle = this.isPlayerSide ? '#639bff' : 'red';
-        ctx.fillRect(this.x, this.y, this.sizeX, this.sizeY);
+        ctx.fillRect(getLeft(this), getTop(this), this.sizeX, this.sizeY);
     }
 
     onDeath() {}
@@ -168,8 +188,8 @@ class MovingDownEnemy {
     isSolid = true;
 
     constructor(x, y) {
-        this.x = x - this.sizeX / 2;
-        this.y = y - this.sizeY / 2;
+        this.x = x;
+        this.y = y;
     }
 
     update(entities) {
@@ -187,7 +207,7 @@ class MovingDownEnemy {
             }
         }
 
-        ctx.drawImage(MovingDownEnemy.sprite, this.x, this.y, this.sizeX, this.sizeY);
+        ctx.drawImage(MovingDownEnemy.sprite, getLeft(this), getTop(this), this.sizeX, this.sizeY);
     }
 
     onDeath() {}
@@ -207,11 +227,11 @@ class ShootingDownEnemy {
     isSolid = true;
 
     static shotCooldown = 180;
-    shotCooldownRemaining = this.shotCooldown / 2;
+    shotCooldownRemaining = ShootingDownEnemy.shotCooldown / 2;
 
     constructor(x, y) {
-        this.x = x - this.sizeX / 2;
-        this.y = y - this.sizeY / 2;
+        this.x = x;
+        this.y = y;
     }
 
     update(entities) {
@@ -238,16 +258,13 @@ class ShootingDownEnemy {
         if (canShoot) {
             if (this.shotCooldownRemaining <= 0) {
                 this.shotCooldownRemaining = ShootingDownEnemy.shotCooldown;
-                entities.push(new Bullet(
-                    this.x + this.sizeX / 2, 
-                    this.y + this.sizeY / 2, 
-                    false))
+                entities.push(new Bullet(this.x, this.y, false));
             } else {
                 this.shotCooldownRemaining -= enemySpeed;
             }
         }
 
-        ctx.drawImage(ShootingDownEnemy.sprite, this.x, this.y, this.sizeX, this.sizeY);
+        ctx.drawImage(ShootingDownEnemy.sprite, getLeft(this), getTop(this), this.sizeX, this.sizeY);
     }
 
     onDeath() {}
