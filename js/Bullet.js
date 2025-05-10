@@ -1,4 +1,4 @@
-import { ctx, height } from './env.js';
+import { drawRect, height } from './env.js';
 import { getLeft, getTop, getBottom } from './Entity.js';
 
 export class Bullet {
@@ -28,8 +28,8 @@ export class Bullet {
             this.dead = true;
         }
 
-        ctx.fillStyle = this.isPlayerSide ? '#639bff' : 'red';
-        ctx.fillRect(getLeft(this), getTop(this), this.sizeX, this.sizeY);
+        drawRect(this.isPlayerSide ? '#639bff' : 'red', 
+            getLeft(this), getTop(this), this.sizeX, this.sizeY);
     }
 
     onDeath() { }
