@@ -1,4 +1,4 @@
-import { width, height, isKeyDown, ctx, removeLife } from './env.js';
+import { width, height, isKeyDown, removeLife, drawSprite } from './env.js';
 import { entities, getLeft, getRight, getTop, areColliding } from './Entity.js';
 import { Bullet } from './Bullet.js';
 
@@ -62,7 +62,7 @@ export class Player {
 
         if (this.respawnCooldownRemaining <= 0
             || this.respawnCooldownRemaining / 10 % 2 == 0) {
-            ctx.drawImage(Player.sprite, getLeft(this), getTop(this), this.sizeX, this.sizeY);
+            drawSprite(Player.sprite, getLeft(this), getTop(this), this.sizeX, this.sizeY);
         }
 
         if (this.respawnCooldownRemaining <= 0) {

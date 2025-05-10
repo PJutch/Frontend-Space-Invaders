@@ -15,11 +15,24 @@ onkeyup = (e) => {
 // Canvas
 
 const canvas = document.querySelector('.game');
-export const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 
 export const width = canvas.width;
 export const height = canvas.height;
+
+export function clearCanvas() {
+    ctx.clearRect(0, 0, width, height);
+}
+
+export function drawSprite(sprite, x, y, sizeX, sizeY) {
+    ctx.drawImage(sprite, x, y, sizeX, sizeY);
+}
+
+export function drawRect(fillColour, x, y, sizeX, sizeY) {
+    ctx.fillStyle = fillColour;
+    ctx.fillRect(x, y, sizeX, sizeY);
+}
 
 // Lives
 
@@ -27,19 +40,10 @@ let lives = 3;
 
 export function removeLife() {
     --lives;
+    document.querySelector('.live:not(:has(~ .live))').remove();
+
     if (lives <= 0) {
         gameover();
-    }
-}
-
-export function adjustLifes() {
-    while (document.getElementsByClassName('live').length > lives) {
-        document.querySelector('.live:not(:has(~ .live))').remove();
-    }
-    while (document.getElementsByClassName('live').length < lives) {
-        let newLiveIndicator = new HTMLDivElement();
-        newLiveIndicator.classList.add('live');
-        document.querySelector('.lives').appendChild(newLiveIndicator);
     }
 }
 
