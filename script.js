@@ -10,15 +10,20 @@ onkeyup = (e) => {
 
 const canvas = document.querySelector('.game');
 const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+
+const playerSprite = document.getElementById("player");
+const movingDownEnemySprite = document.getElementById("lander");
+const shootingDownEnemySprite = document.getElementById("shooter");
 
 function areCollidingX(firstEntity, secondEntity) {
-    return firstEntity.x <= secondEntity.x && secondEntity.x < firstEntity.x + firstEntity.size
-        || secondEntity.x <= firstEntity.x && firstEntity.x < secondEntity.x + firstEntity.size;
+    return firstEntity.x <= secondEntity.x && secondEntity.x < firstEntity.x + firstEntity.sizeX
+        || secondEntity.x <= firstEntity.x && firstEntity.x < secondEntity.x + secondEntity.sizeX;
 }
 
 function areCollidingY(firstEntity, secondEntity) {
-   return firstEntity.y <= secondEntity.y && secondEntity.y < firstEntity.y + firstEntity.size
-       || secondEntity.y <= firstEntity.y && firstEntity.y < secondEntity.y + firstEntity.size;
+   return firstEntity.y <= secondEntity.y && secondEntity.y < firstEntity.y + firstEntity.sizeY
+       || secondEntity.y <= firstEntity.y && firstEntity.y < secondEntity.y + secondEntity.sizeY;
 }
 
 function areColliding(firstEntity, secondEntity) {
@@ -36,10 +41,11 @@ function gameover() {
 }
 
 class Player {
-    size = 50;
-    fillStyle = 'rgb(255 255 255)';
+    sizeX = 48;
+    sizeY = 32;
+    sprite = playerSprite;
 
-    x = canvas.width / 2 - this.size / 2;
+    x = canvas.width / 2 - this.sizeX / 2;
     y = canvas.height - 100;
 
     speed = 2;
@@ -66,15 +72,15 @@ class Player {
         }
     
         this.x += this.xVelocity;
-        if (this.x > canvas.width - this.size) {
-            this.x = canvas.width - this.size;
+        if (this.x > canvas.width - this.sizeX) {
+            this.x = canvas.width - this.sizeX;
         }
         if (this.x < 0) {
             this.x = 0;
         }
     
         if (isKeyDown['KeyW'] && this.shotCooldownRemaining <= 0) {
-            entities.push(new Bullet(this.x + this.size / 2, this.y + this.size / 2, true));
+            entities.push(new Bullet(this.x + this.sizeX / 2, this.y + this.sizeY / 2, true));
             this.shotCooldownRemaining = this.shotCooldown;
         }
         
@@ -92,8 +98,7 @@ class Player {
         }
 
         if (this.respawnCooldownRemaining <= 0 || this.respawnCooldownRemaining / 10 % 2 == 0) {
-            ctx.fillStyle = this.fillStyle;
-            ctx.fillRect(this.x, this.y, this.size, this.size);
+            ctx.drawImage(this.sprite, this.x, this.y, this.sizeX, this.sizeY);
         }
 
         if (this.respawnCooldownRemaining <= 0) {
@@ -121,8 +126,9 @@ class Bullet {
 
     velocity;
 
-    size = 20;
-    fillStyle = 'rgb(255 255 255)';
+    sizeX = 3;
+    sizeY = 15;
+    fillStyle;
 
     dead = false;
     isPlayerSide;
@@ -130,10 +136,11 @@ class Bullet {
     isSolid = false;
 
     constructor(x, y, isPlayerSide) {
-        this.x = x - this.size / 2;
-        this.y = y - this.size / 2;
+        this.x = x - this.sizeX / 2;
+        this.y = y - this.sizeY / 2;
         this.isPlayerSide = isPlayerSide;
         this.velocity = (this.isPlayerSide ? -1 : 1) * 5;
+        this.fillStyle = (this.isPlayerSide ? '#639bff' : 'red')
     }
 
     update(entities) {
@@ -144,21 +151,21 @@ class Bullet {
         }
 
         ctx.fillStyle = this.fillStyle;
-        ctx.fillRect(this.x, this.y, this.size, this.size);
+        ctx.fillRect(this.x, this.y, this.sizeX, this.sizeY);
     }
 
     onDeath() {}
 }
 
 let enemySpeed = 0;
-const enemySize = 50;
 
 class MovingDownEnemy {
     x;
     y;
 
-    size = enemySize;
-    fillStyle = 'rgb(255, 0, 0)';
+    sizeX = enemyWidth;
+    sizeY = 32
+    sprite = movingDownEnemySprite;
 
     dead = false;
     isPlayerSide = false;
@@ -166,8 +173,8 @@ class MovingDownEnemy {
     isSolid = true;
 
     constructor(x, y) {
-        this.x = x - this.size / 2;
-        this.y = y - this.size / 2;
+        this.x = x - this.sizeX / 2;
+        this.y = y - this.sizeY / 2;
     }
 
     update(entities) {
@@ -186,7 +193,7 @@ class MovingDownEnemy {
         }
 
         ctx.fillStyle = this.fillStyle;
-        ctx.fillRect(this.x, this.y, this.size, this.size);
+        ctx.drawImage(this.sprite, this.x, this.y, this.sizeX, this.sizeY);
     }
 
     onDeath() {}
@@ -196,8 +203,9 @@ class ShootingDownEnemy {
     x;
     y;
 
-    size = enemySize;
-    fillStyle = 'rgb(255, 0, 0)';
+    sizeX = enemyWidth;
+    sizeY = 28;
+    sprite = shootingDownEnemySprite;
 
     dead = false;
     isPlayerSide = false;
@@ -208,8 +216,8 @@ class ShootingDownEnemy {
     shotCooldownRemaining = this.shotCooldown / 2;
 
     constructor(x, y) {
-        this.x = x - this.size / 2;
-        this.y = y - this.size / 2;
+        this.x = x - this.sizeX / 2;
+        this.y = y - this.sizeY / 2;
     }
 
     update(entities) {
@@ -237,8 +245,8 @@ class ShootingDownEnemy {
             if (this.shotCooldownRemaining <= 0) {
                 this.shotCooldownRemaining = this.shotCooldown;
                 entities.push(new Bullet(
-                    this.x + this.size / 2, 
-                    this.y + this.size / 2, 
+                    this.x + this.sizeX / 2, 
+                    this.y + this.sizeY / 2, 
                     false))
             } else {
                 this.shotCooldownRemaining -= enemySpeed;
@@ -246,7 +254,7 @@ class ShootingDownEnemy {
         }
 
         ctx.fillStyle = this.fillStyle;
-        ctx.fillRect(this.x, this.y, this.size, this.size);
+        ctx.drawImage(this.sprite, this.x, this.y, this.sizeX, this.sizeY);
     }
 
     onDeath() {}
@@ -266,48 +274,64 @@ function areThereEnemies() {
     return false;
 }
 
-function drawFrame() {
-    ctx.fillStyle = 'rgb(0 0 127)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+const enemyWidth = 48;
+const enemyHeight = 32;
 
-    for (let entity of entities) {
-        entity.update(entities);
-    }
+const enemyGapX = 20;
+const enemyGapY = 10;
 
-    for (let entity of entities) {
-        if (entity.dead) {
-            entity.onDeath();
-        }
-    }
-    entities = entities.filter((entity) => !entity.dead);
+function spawnEnemies() {
+    let spacePerEnemyX = enemyWidth + enemyGapX;
+    let enemiesInRow = Math.floor(canvas.width / spacePerEnemyX);
+    let spaceLeftX = canvas.width - enemiesInRow * spacePerEnemyX;
 
-    while (document.getElementsByClassName('live').length > lives) {
-        document.querySelector('.live:not(:has(~ .live))').remove();
-    }
-    while (document.getElementsByClassName('live').length < lives) {
-        let newLiveIndicator = new HTMLDivElement();
-        newLiveIndicator.classList.add('live');
-        document.querySelector('.lives').appendChild(newLiveIndicator);
-    }
+    for (let i = 0; i < 3; ++i) { 
+        for (let j = 0; j < enemiesInRow; ++j) {
+            let x = j * (enemyWidth + enemyGapX) + enemyWidth / 2 + spaceLeftX / 2;
+            let y = enemyHeight / 2 + i * (enemyHeight + enemyGapY);
 
-    if (!areThereEnemies()) {
-        for (let i = 0; i < 3; ++i) {
-            let maxJ = Math.floor(canvas.width / enemySize);
-            for (let j = 0; j < maxJ; ++j) {
-                if (j == 2 || j == maxJ - 3) {
-                    entities.push(new ShootingDownEnemy(
-                        j * enemySize + enemySize / 2, 
-                        enemySize / 2 + i * (enemySize + 10)));
-                } else {
-                    entities.push(new MovingDownEnemy(
-                        j * enemySize + enemySize / 2, 
-                        enemySize / 2 + i * (enemySize + 10)));
-                }
+            if (j == 2 || j == enemiesInRow - 3) {
+                entities.push(new ShootingDownEnemy(x, y));
+            } else {
+                entities.push(new MovingDownEnemy(x, y));
             }
         }
     }
+}
 
-    enemySpeed += 0.0001;
+// Change from dev console to pause
+let pause = false;
+
+function drawFrame() {
+    if (!pause) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+        for (let entity of entities) {
+            entity.update(entities);
+        }
+
+        for (let entity of entities) {
+            if (entity.dead) {
+                entity.onDeath();
+            }
+        }
+        entities = entities.filter((entity) => !entity.dead);
+
+        while (document.getElementsByClassName('live').length > lives) {
+            document.querySelector('.live:not(:has(~ .live))').remove();
+        }
+        while (document.getElementsByClassName('live').length < lives) {
+            let newLiveIndicator = new HTMLDivElement();
+            newLiveIndicator.classList.add('live');
+            document.querySelector('.lives').appendChild(newLiveIndicator);
+        }
+
+        if (!areThereEnemies()) {
+            spawnEnemies();
+        }
+
+        enemySpeed += 0.0001;
+    }
 
     requestAnimationFrame(drawFrame);
 }
