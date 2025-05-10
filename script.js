@@ -12,10 +12,6 @@ const canvas = document.querySelector('.game');
 const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 
-const playerSprite = document.getElementById("player");
-const movingDownEnemySprite = document.getElementById("lander");
-const shootingDownEnemySprite = document.getElementById("shooter");
-
 function areCollidingX(firstEntity, secondEntity) {
     return firstEntity.x <= secondEntity.x && secondEntity.x < firstEntity.x + firstEntity.sizeX
         || secondEntity.x <= firstEntity.x && firstEntity.x < secondEntity.x + secondEntity.sizeX;
@@ -43,16 +39,17 @@ function gameover() {
 class Player {
     sizeX = 48;
     sizeY = 32;
-    sprite = playerSprite;
+
+    static sprite = document.getElementById("player");
 
     x = canvas.width / 2 - this.sizeX / 2;
     y = canvas.height - 100;
 
-    speed = 2;
+    static speed = 2;
     xVelocity = 0;
 
     shotCooldownRemaining = 0;
-    shotCooldown = 60;
+    static shotCooldown = 60;
 
     dead = false;
     isPlayerSide = true;
@@ -60,13 +57,13 @@ class Player {
     isSolid = true;
 
     respawnCooldownRemaining = 0;
-    respawnCooldown = 120;
+    static respawnCooldown = 120;
 
     update(entities) {
         if (isKeyDown['KeyD'] && !isKeyDown['KeyA']) {
-            this.xVelocity = this.speed;       
+            this.xVelocity = Player.speed;       
         } else if (isKeyDown['KeyA'] && !isKeyDown['KeyD']) {
-            this.xVelocity = -this.speed;
+            this.xVelocity = -Player.speed;
         } else if (!isKeyDown['KeyD'] && !isKeyDown['KeyA']) {
             this.xVelocity = 0;
         }
@@ -81,7 +78,7 @@ class Player {
     
         if (isKeyDown['KeyW'] && this.shotCooldownRemaining <= 0) {
             entities.push(new Bullet(this.x + this.sizeX / 2, this.y + this.sizeY / 2, true));
-            this.shotCooldownRemaining = this.shotCooldown;
+            this.shotCooldownRemaining = Player.shotCooldown;
         }
         
         if (this.shotCooldownRemaining) {
@@ -97,8 +94,9 @@ class Player {
             }
         }
 
-        if (this.respawnCooldownRemaining <= 0 || this.respawnCooldownRemaining / 10 % 2 == 0) {
-            ctx.drawImage(this.sprite, this.x, this.y, this.sizeX, this.sizeY);
+        if (this.respawnCooldownRemaining <= 0 
+         || this.respawnCooldownRemaining / 10 % 2 == 0) {
+            ctx.drawImage(Player.sprite, this.x, this.y, this.sizeX, this.sizeY);
         }
 
         if (this.respawnCooldownRemaining <= 0) {
@@ -116,7 +114,7 @@ class Player {
 
         this.dead = false;
         this.invulnerable = true;
-        this.respawnCooldownRemaining = this.respawnCooldown;
+        this.respawnCooldownRemaining = Player.respawnCooldown;
     }
 };
 
@@ -128,10 +126,8 @@ class Bullet {
 
     sizeX = 3;
     sizeY = 15;
-    fillStyle;
 
     dead = false;
-    isPlayerSide;
     invulnerable = false;
     isSolid = false;
 
@@ -140,7 +136,6 @@ class Bullet {
         this.y = y - this.sizeY / 2;
         this.isPlayerSide = isPlayerSide;
         this.velocity = (this.isPlayerSide ? -1 : 1) * 5;
-        this.fillStyle = (this.isPlayerSide ? '#639bff' : 'red')
     }
 
     update(entities) {
@@ -150,7 +145,7 @@ class Bullet {
             this.dead = true;
         }
 
-        ctx.fillStyle = this.fillStyle;
+        ctx.fillStyle = this.isPlayerSide ? '#639bff' : 'red';
         ctx.fillRect(this.x, this.y, this.sizeX, this.sizeY);
     }
 
@@ -165,7 +160,7 @@ class MovingDownEnemy {
 
     sizeX = enemyWidth;
     sizeY = 32
-    sprite = movingDownEnemySprite;
+    static sprite = document.getElementById("lander");
 
     dead = false;
     isPlayerSide = false;
@@ -192,8 +187,7 @@ class MovingDownEnemy {
             }
         }
 
-        ctx.fillStyle = this.fillStyle;
-        ctx.drawImage(this.sprite, this.x, this.y, this.sizeX, this.sizeY);
+        ctx.drawImage(MovingDownEnemy.sprite, this.x, this.y, this.sizeX, this.sizeY);
     }
 
     onDeath() {}
@@ -205,14 +199,14 @@ class ShootingDownEnemy {
 
     sizeX = enemyWidth;
     sizeY = 28;
-    sprite = shootingDownEnemySprite;
+    static sprite = document.getElementById("shooter");
 
     dead = false;
     isPlayerSide = false;
     invulnerable = false;
     isSolid = true;
 
-    shotCooldown = 180;
+    static shotCooldown = 180;
     shotCooldownRemaining = this.shotCooldown / 2;
 
     constructor(x, y) {
@@ -243,7 +237,7 @@ class ShootingDownEnemy {
 
         if (canShoot) {
             if (this.shotCooldownRemaining <= 0) {
-                this.shotCooldownRemaining = this.shotCooldown;
+                this.shotCooldownRemaining = ShootingDownEnemy.shotCooldown;
                 entities.push(new Bullet(
                     this.x + this.sizeX / 2, 
                     this.y + this.sizeY / 2, 
@@ -253,8 +247,7 @@ class ShootingDownEnemy {
             }
         }
 
-        ctx.fillStyle = this.fillStyle;
-        ctx.drawImage(this.sprite, this.x, this.y, this.sizeX, this.sizeY);
+        ctx.drawImage(ShootingDownEnemy.sprite, this.x, this.y, this.sizeX, this.sizeY);
     }
 
     onDeath() {}
@@ -299,6 +292,17 @@ function spawnEnemies() {
     }
 }
 
+function adjustLifes() {
+    while (document.getElementsByClassName('live').length > lives) {
+        document.querySelector('.live:not(:has(~ .live))').remove();
+    }
+    while (document.getElementsByClassName('live').length < lives) {
+        let newLiveIndicator = new HTMLDivElement();
+        newLiveIndicator.classList.add('live');
+        document.querySelector('.lives').appendChild(newLiveIndicator);
+    }
+}
+
 // Change from dev console to pause
 let pause = false;
 
@@ -316,15 +320,8 @@ function drawFrame() {
             }
         }
         entities = entities.filter((entity) => !entity.dead);
-
-        while (document.getElementsByClassName('live').length > lives) {
-            document.querySelector('.live:not(:has(~ .live))').remove();
-        }
-        while (document.getElementsByClassName('live').length < lives) {
-            let newLiveIndicator = new HTMLDivElement();
-            newLiveIndicator.classList.add('live');
-            document.querySelector('.lives').appendChild(newLiveIndicator);
-        }
+        
+        adjustLifes();
 
         if (!areThereEnemies()) {
             spawnEnemies();
