@@ -15,8 +15,15 @@ app.get('/api/score', async (c) => {
 
 app.post('/api/score', async (c) => {
     const body = await c.req.json();
-    const result = await kv.set(['score', body.nickname], body);
-    return c.json(result);
+    const oldBody = (await kv.get(['score', body.nickname])).value;
+    
+    if (!oldBody || body.score > oldBody.score) {
+        const result = await kv.set(['score', body.nickname], body);
+        result.updated = true;
+        return c.json(result);
+    } else {
+        return c.json({updated: false});
+    }
 });
 
 Deno.serve(app.fetch);

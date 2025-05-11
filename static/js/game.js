@@ -9,19 +9,16 @@ entities.push(new Player());
 let pause = false;
 
 function drawFrame() {
-    if (!pause) {
-        clearCanvas();
+    clearCanvas();
 
-        for (let entity of entities) {
-            entity.update();
-        }
-        removeDead();
-
-        updateEnemies();
-
-        addScore(1 / 60);
+    for (let entity of entities) {
+        entity.update();
     }
+    removeDead();
+    updateEnemies();
 
+    addScore(1 / 60);
+    
     requestAnimationFrame(drawFrame);
 }
 
