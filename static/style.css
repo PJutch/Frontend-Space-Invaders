@@ -41,7 +41,7 @@ body {
 .nav-link {
     font: 30px PixeloidSans;
     color: yellow;
-    width: 300px;
+    width: 350px;
     text-align: center;
 }
 
@@ -193,5 +193,5 @@ body {
 }
 
 .records-table-row:hover {
-    background-color: darkgray;
+    background-color: #555555;
 }
