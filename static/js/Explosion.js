@@ -21,8 +21,8 @@ export class Explosion {
         this.y = y;
     }
 
-    update() {
-        --this.toLive;
+    update(dt) {
+        this.toLive -= dt;
         if (this.toLive <= 0) {
             this.dead = true;
         }

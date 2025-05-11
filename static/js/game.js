@@ -8,18 +8,23 @@ entities.push(new Player());
 // Change from dev console to pause
 let pause = false;
 
+let prevTime = performance.now();
+
 function drawFrame() {
+    const dt = (performance.now() - prevTime) / 5;
+    prevTime = performance.now();
+
     clearCanvas();
 
     for (let entity of entities) {
-        entity.update();
+        entity.update(dt);
     }
     removeDead();
-    updateEnemies();
+    updateEnemies(dt);
 
-    addScore(1 / 60);
+    addScore(dt / 60);
     
     requestAnimationFrame(drawFrame);
 }
 
-drawFrame();
+drawFrame(prevTime);

@@ -24,8 +24,8 @@ export class Bullet {
         this.owner = owner;
     }
 
-    update() {
-        this.y += this.velocity;
+    update(dt) {
+        this.y += this.velocity * dt;
 
         if (getTop(this) < 0 || getBottom(this) > height) {
             this.dead = true;

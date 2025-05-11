@@ -40,8 +40,8 @@ class Enemy {
         this.onDeathScore = onDeathScore;
     }
 
-    update() {
-        this.x += (enemiesMoveRight ? enemySpeed : -enemySpeed);
+    update(dt) {
+        this.x += (enemiesMoveRight ? enemySpeed : -enemySpeed) * dt;
 
         for (let entity of entities) {
             if (!entity.invulnerable && areColliding(this, entity) && entity.isPlayerSide) {
@@ -56,7 +56,7 @@ class Enemy {
                 entities.push(new Bullet(this.x, this.y, false, this));
                 playRandom(shotSounds);
             } else {
-                this.shotCooldownRemaining -= enemySpeed;
+                this.shotCooldownRemaining -= enemySpeed * dt;
             }
         }
 
@@ -138,7 +138,7 @@ function enemiesReachedBottom() {
     return false;
 }
 
-export function updateEnemies() {
+export function updateEnemies(dt) {
     if (!areThereEnemies()) {
         spawnEnemies();
     }
@@ -147,7 +147,7 @@ export function updateEnemies() {
         gameover();
     }
 
-    spaceCovered += enemySpeed;
+    spaceCovered += enemySpeed * dt;
     if (spaceCovered >= spaceLeftX) {
         for (let entity of entities) {
             if (!entity.isPlayerSide && entity.isSolid) {
@@ -158,5 +158,5 @@ export function updateEnemies() {
         spaceCovered = 0;
     }
 
-    enemySpeed += 0.00002;
+    enemySpeed += 0.00002 * dt;
 }

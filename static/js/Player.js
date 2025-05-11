@@ -25,7 +25,7 @@ export class Player {
     respawnCooldownRemaining = 0;
     static respawnCooldown = 120;
 
-    update() {
+    update(dt) {
         if (isKeyDown['KeyD'] && !isKeyDown['KeyA']) {
             this.xVelocity = Player.speed;
         } else if (isKeyDown['KeyA'] && !isKeyDown['KeyD']) {
@@ -34,7 +34,7 @@ export class Player {
             this.xVelocity = 0;
         }
 
-        this.x += this.xVelocity;
+        this.x += this.xVelocity * dt;
         if (getRight(this) > width) {
             this.x = width - this.sizeX / 2;
         }
@@ -57,14 +57,14 @@ export class Player {
         }
 
         if (this.respawnCooldownRemaining <= 0
-            || this.respawnCooldownRemaining / 10 % 2 == 0) {
+         || this.respawnCooldownRemaining / 10 % 2 == 0) {
             drawSprite(Player.sprite, getLeft(this), getTop(this), this.sizeX, this.sizeY);
         }
 
         if (this.respawnCooldownRemaining <= 0) {
             this.invulnerable = false;
         } else {
-            --this.respawnCooldownRemaining;
+            this.respawnCooldownRemaining -= dt;
         }
     }
 
