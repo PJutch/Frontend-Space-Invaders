@@ -21,7 +21,7 @@ export class Bullet {
         this.x = x;
         this.y = y;
         this.isPlayerSide = isPlayerSide;
-        this.velocity = (this.isPlayerSide ? -5 : 3);
+        this.velocity = (this.isPlayerSide ? -5 : 1);
         this.owner = owner;
 
         if (!isPlayerSide) {

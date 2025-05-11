@@ -124,7 +124,7 @@ function spawnEnemies() {
     }
 }
 
-let enemySpeed = 0;
+let enemySpeed = 0.01;
 let enemiesMoveRight = true;
 let spaceCovered = 0;
 
@@ -169,5 +169,5 @@ export function updateEnemies() {
         spaceCovered = 0;
     }
 
-    enemySpeed += 0.00001;
+    enemySpeed += 0.00002;
 }
