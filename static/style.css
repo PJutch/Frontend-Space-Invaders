@@ -96,10 +96,24 @@ body {
     
 }
 
-.desciption {
+.info-container {
+    display: flex;
+}
+
+.info-text {
     font: 20px PixeloidSans;
     color: white;
-    padding: 0 10px 0;
+    padding-left: 50px;
+}
+
+.info-images {
+    image-rendering: pixelated;
+    padding-right: 50px;
+    text-align: right;
+}
+
+.info-image {
+    padding-bottom: 20px;
 }
 
 .footer {
