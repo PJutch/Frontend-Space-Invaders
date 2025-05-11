@@ -3,17 +3,19 @@
         <title>Space Invaders</title>
         <link href="style.css" rel="stylesheet">
     </head>
-    <body class="gameover-body">
-        <header class="gameover-header">
+    <body>
+        <header>
             <h1 class="gameover">Game Over</h1>
         </header>
         <main>
-            <form action="index.html" method="get" class="save-score-form">
-                <label class="input-label">Ваш никнейм:</label>
-                <input type="text" id="nickname" class="text-field">
+            <p class="gameover-score-text">Вы набрали <span id="gameover-score">0</span> очков</p>
+            <form action="index.html" method="get" id="save-score-form">
+                <label class="input-label">Ваш никнейм: </label>
+                <input type="text" id="nickname" class="text-field" size="10">
                 <br>
                 <input type="submit" value="[Сохранить счёт]" class="submit-button">
             </form>
         </main>
     </body>
+    <script src="js/gameover.js"></script>
 </html>

@@ -1,4 +1,4 @@
-import { clearCanvas } from './env.js';
+import { clearCanvas, addScore } from './env.js';
 import { Player } from './Player.js';
 import { entities, removeDead } from './Entity.js';
 import { trySpawnEnemies, updateEnemySpeed } from './Enemy.js';
@@ -19,6 +19,8 @@ function drawFrame() {
 
         trySpawnEnemies();
         updateEnemySpeed();
+
+        addScore(1 / 60);
     }
 
     requestAnimationFrame(drawFrame);
