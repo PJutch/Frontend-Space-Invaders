@@ -9,7 +9,7 @@ app.use('*', serveStatic({ root: './static' }));
 app.get("/api/score", async (c) => {
   const iter = await kv.list({ prefix: ["score"] });
   const scoreList = [];
-  for await (const res of iter) scoreList.push(res);
+  for await (const res of iter) scoreList.push(res.value);
   return c.json(scoreList);
 });
 

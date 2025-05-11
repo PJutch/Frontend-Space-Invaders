@@ -149,3 +149,33 @@ body {
     text-align: center;
     margin: 0 0 0;
 }
+
+.records-table {
+    font: 20px PixeloidSans;
+    color: white;
+    margin: 0 auto 0;
+    width: 50%;
+    border-collapse: collapse;
+}
+
+.records-table-head {
+    color: yellow;
+}
+
+.records-table-string-column {
+    text-align: left;
+}
+
+.records-table-number-column {
+    text-align: right;
+}
+
+.records-table-place-column {
+    text-align: right;
+    padding-right: 10px;
+    width: 50px;
+}
+
+.records-table-row:hover {
+    background-color: darkgray;
+}
