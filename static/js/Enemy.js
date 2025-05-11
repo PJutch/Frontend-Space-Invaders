@@ -1,5 +1,9 @@
 import { width, height, drawSprite, gameover, addScore } from './env.js';
-import { entities, getLeft, getTop, areColliding, areCollidingX, getBottom } from './Entity.js';
+import { 
+    entities, 
+    getLeft, getRight, getTop, getBottom, 
+    areColliding, areCollidingX 
+} from './Entity.js';
 import { Bullet } from './Bullet.js';
 
 class Enemy {
@@ -41,7 +45,7 @@ class Enemy {
 
         for (let entity of entities) {
             if (entity != this && entity.y > this.y && areCollidingX(this, entity)
-                && entity.isSolid && !entity.isPlayerSide) {
+             && entity.isSolid && !entity.isPlayerSide) {
                 return false;
             }
         }
@@ -49,11 +53,7 @@ class Enemy {
     }
 
     update() {
-        this.y += enemySpeed;
-        if (getBottom(this) > height) {
-            gameover();
-            this.dead = true;
-        }
+        this.x += (enemiesMoveRight ? enemySpeed : -enemySpeed);
 
         for (let entity of entities) {
             if (!entity.invulnerable && areColliding(this, entity) && entity.isPlayerSide) {
@@ -91,12 +91,6 @@ function makeLander(x, y) {
     return new Enemy(x, y, enemyWidth, 32, landerSprite, -1, 10);
 }
 
-let enemySpeed = 0;
-
-export function updateEnemySpeed() {
-    enemySpeed += 0.0001;
-}
-
 function areThereEnemies() {
     for (let entity of entities) {
         if (!entity.isPlayerSide && entity.isSolid) {
@@ -112,11 +106,7 @@ const enemyHeight = 32;
 const enemyGapX = 20;
 const enemyGapY = 10;
 
-export function trySpawnEnemies() {
-    if (areThereEnemies()) {
-        return;
-    }
-
+function spawnEnemies() {
     let spacePerEnemyX = enemyWidth + enemyGapX;
     let enemiesInRow = Math.floor(width / spacePerEnemyX);
     let spaceLeftX = width - enemiesInRow * spacePerEnemyX;
@@ -133,4 +123,50 @@ export function trySpawnEnemies() {
             }
         }
     }
+}
+
+let enemySpeed = 0;
+let enemiesMoveRight = true;
+
+function enemiesReachedBorder() {
+    for (let entity of entities) {
+        if (!entity.isPlayerSide && entity.isSolid) {
+            if (enemiesMoveRight && getRight(entity) >= width 
+            || !enemiesMoveRight && getLeft(entity) <= 0) {
+                console.log(entity);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function enemiesReachedBottom() {
+    for (let entity of entities) {
+        if (!entity.isPlayerSide && entity.isSolid && getBottom(entity) >= height) {
+            return true;
+        }
+    }
+    return false;
+}
+
+export function updateEnemies() {
+    if (!areThereEnemies()) {
+        spawnEnemies();
+    }
+
+    if (enemiesReachedBorder()) {
+        for (let entity of entities) {
+            if (!entity.isPlayerSide && entity.isSolid) {
+                entity.y += enemyHeight;
+            }
+        }
+        enemiesMoveRight = !enemiesMoveRight;
+    }
+
+    if (enemiesReachedBottom()) {
+        gameover();
+    }
+
+    enemySpeed += 0.00001;
 }

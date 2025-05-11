@@ -14,7 +14,6 @@ app.get('/api/score', async (c) => {
 });
 
 app.post('/api/score', async (c) => {
-    console.log(await c.req.text());
     const body = await c.req.json();
     const result = await kv.set(['score', body.nickname], body);
     return c.json(result);

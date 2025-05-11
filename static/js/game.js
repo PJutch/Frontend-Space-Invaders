@@ -1,7 +1,7 @@
 import { clearCanvas, addScore } from './env.js';
 import { Player } from './Player.js';
 import { entities, removeDead } from './Entity.js';
-import { trySpawnEnemies, updateEnemySpeed } from './Enemy.js';
+import { updateEnemies } from './Enemy.js';
 
 entities.push(new Player());
 
@@ -17,8 +17,7 @@ function drawFrame() {
         }
         removeDead();
 
-        trySpawnEnemies();
-        updateEnemySpeed();
+        updateEnemies();
 
         addScore(1 / 60);
     }
