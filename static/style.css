@@ -157,6 +157,17 @@ body {
     display: block;
 }
 
+.cancel-button {
+    font: 30px PixeloidSans;
+    color: yellow;
+    background-color: black;
+    border: 0;
+    margin: 10px auto 0;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+}
+
 .gameover-score-text {
     font: 50px PixeloidSans;
     color: yellow;
