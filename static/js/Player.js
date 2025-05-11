@@ -1,6 +1,7 @@
 import { width, height, isKeyDown, removeLife, drawSprite } from './env.js';
 import { entities, getLeft, getRight, getTop, areColliding } from './Entity.js';
 import { Bullet } from './Bullet.js';
+import { deathSounds, playRandom } from './audio.js';
 
 export class Player {
     sizeX = 48;
@@ -68,6 +69,8 @@ export class Player {
     }
 
     onDeath() {
+        playRandom(deathSounds);
+
         removeLife();
 
         this.dead = false;

@@ -1,5 +1,6 @@
 import { drawRect, height } from './env.js';
 import { getLeft, getTop, getBottom } from './Entity.js';
+import { shotSounds, playRandom } from './audio.js';
 
 export class Bullet {
     x;
@@ -22,6 +23,10 @@ export class Bullet {
         this.isPlayerSide = isPlayerSide;
         this.velocity = (this.isPlayerSide ? -5 : 3);
         this.owner = owner;
+
+        if (!isPlayerSide) {
+            playRandom(shotSounds);
+        }
     }
 
     update() {
