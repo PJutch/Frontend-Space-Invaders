@@ -5,7 +5,7 @@ import {
     areColliding, areCollidingX 
 } from './Entity.js';
 import { Bullet } from './Bullet.js';
-import { deathSounds, playRandom } from './audio.js';
+import { deathSounds, shotSounds, playRandom } from './audio.js';
 
 class Enemy {
     x;
@@ -53,6 +53,7 @@ class Enemy {
             if (this.shotCooldownRemaining <= 0) {
                 this.shotCooldownRemaining = this.shotCooldown;
                 entities.push(new Bullet(this.x, this.y, false, this));
+                playRandom(shotSounds);
             } else {
                 this.shotCooldownRemaining -= enemySpeed;
             }
@@ -67,24 +68,6 @@ class Enemy {
     }
 }
 
-const lander1Sprite = document.getElementById("lander1");
-
-function makeLander1(x, y) {
-    return new Enemy(x, y, enemyWidth, 28, lander1Sprite, -1, 20);
-}
-
-const lander2Sprite = document.getElementById("lander2");
-
-function makeLander2(x, y) {
-    return new Enemy(x, y, enemyWidth, 32, lander2Sprite, -1, 20);
-}
-
-const shooterSprite = document.getElementById("shooter");
-
-function makeShooter(x, y) {
-    return new Enemy(x, y, 32, 32, shooterSprite, 90, 40);
-}
-
 function areThereEnemies() {
     for (let entity of entities) {
         if (!entity.isPlayerSide && entity.isSolid) {
@@ -93,6 +76,10 @@ function areThereEnemies() {
     }
     return false;
 }
+
+const lander1Sprite = document.getElementById("lander1");
+const lander2Sprite = document.getElementById("lander2");
+const shooterSprite = document.getElementById("shooter");
 
 const enemyWidth = 48;
 const enemyHeight = 32;
@@ -114,11 +101,11 @@ function spawnEnemies() {
             let y = enemyHeight / 2 + i * (enemyHeight + enemyGapY);
 
             if (i == 2) {
-                entities.push(makeLander1(x, y));
+                entities.push(new Enemy(x, y, enemyWidth, 28, lander1Sprite, -1, 20));
             } else if (i == 1) {
-                entities.push(makeLander2(x, y));
+                entities.push(new Enemy(x, y, enemyWidth, 32, lander2Sprite, -1, 20));
             } else {
-                entities.push(makeShooter(x, y));
+                entities.push(new Enemy(x, y, 32, 32, shooterSprite, 90, 40));
             }
         }
     }
