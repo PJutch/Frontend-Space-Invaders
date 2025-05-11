@@ -5,6 +5,7 @@ import {
     areColliding, areCollidingX 
 } from './Entity.js';
 import { Bullet } from './Bullet.js';
+import { Explosion } from './Explosion.js';
 import { deathSounds, shotSounds, playRandom } from './audio.js';
 
 class Enemy {
@@ -65,6 +66,7 @@ class Enemy {
     onDeath() {
         addScore(this.onDeathScore);
         playRandom(deathSounds);
+        entities.push(new Explosion(this.x, this.y));
     }
 }
 
