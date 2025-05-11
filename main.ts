@@ -1,9 +1,8 @@
-import { Hono } from 'hono'
+import { Hono } from 'hono';
+import { serveStatic } from 'hono/deno';
 
-const app = new Hono()
+const app = new Hono();
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
+app.use('*', serveStatic({ root: './static' }));
 
-Deno.serve(app.fetch)
+Deno.serve(app.fetch);
