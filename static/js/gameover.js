@@ -5,5 +5,11 @@ document.getElementById('save-score-form').onsubmit = (e) => {
     const nickname = document.getElementById('nickname').value;
     localStorage.removeItem('score');
 
-    console.log(nickname, score);
+    const json = JSON.stringify({
+        nickname: nickname,
+        score: score
+    });
+    console.log(json);
+
+    fetch("/api/score", { method: "POST", body: json });
 }
