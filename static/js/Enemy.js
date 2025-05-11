@@ -1,4 +1,4 @@
-import { width, height, gameover, drawSprite } from './env.js';
+import { width, height, drawSprite, gameover, addScore } from './env.js';
 import { entities, getLeft, getTop, areColliding, areCollidingX, getBottom } from './Entity.js';
 import { Bullet } from './Bullet.js';
 
@@ -17,7 +17,9 @@ class Enemy {
     shotCooldown;
     shotCooldownRemaining;
 
-    constructor(x, y, sizeX, sizeY, sprite, shotCooldown) {
+    onDeathScore;
+
+    constructor(x, y, sizeX, sizeY, sprite, shotCooldown, onDeathScore) {
         this.x = x;
         this.y = y;
 
@@ -28,6 +30,8 @@ class Enemy {
 
         this.shotCooldown = shotCooldown;
         this.shotCooldownRemaining = this.shotCooldown / 2;
+
+        this.onDeathScore = onDeathScore;
     }
 
     canShoot() {
@@ -70,19 +74,21 @@ class Enemy {
         drawSprite(this.sprite, getLeft(this), getTop(this), this.sizeX, this.sizeY);
     }
 
-    onDeath() { }
+    onDeath() {
+        addScore(this.onDeathScore);
+    }
 }
 
 const shooterSprite = document.getElementById("shooter");
 
 function makeShooter(x, y) {
-    return new Enemy(x, y, enemyWidth, 28, shooterSprite, 180);
+    return new Enemy(x, y, enemyWidth, 28, shooterSprite, 180, 20);
 }
 
 const landerSprite = document.getElementById("lander");
 
 function makeLander(x, y) {
-    return new Enemy(x, y, enemyWidth, 32, landerSprite, -1);
+    return new Enemy(x, y, enemyWidth, 32, landerSprite, -1, 10);
 }
 
 let enemySpeed = 0;

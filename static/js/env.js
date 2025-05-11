@@ -53,7 +53,18 @@ let isGameover = false;
 
 export function gameover() {
     if (!isGameover) {
+        localStorage.setItem('score', Math.floor(score));
         window.location.href = 'gameover.html';
     }
     isGameover = true;
+}
+
+// Score
+
+let score = 0;
+const scoreText = document.getElementById('score');
+
+export function addScore(value) {
+    score += value;
+    scoreText.textContent = Math.floor(score);
 }
