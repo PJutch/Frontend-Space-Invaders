@@ -14,11 +14,14 @@ export class Bullet {
     invulnerable = false;
     isSolid = false;
 
-    constructor(x, y, isPlayerSide) {
+    owner;
+
+    constructor(x, y, isPlayerSide, owner) {
         this.x = x;
         this.y = y;
         this.isPlayerSide = isPlayerSide;
         this.velocity = (this.isPlayerSide ? -5 : 3);
+        this.owner = owner;
     }
 
     update() {
@@ -32,5 +35,9 @@ export class Bullet {
             getLeft(this), getTop(this), this.sizeX, this.sizeY);
     }
 
-    onDeath() { }
+    onDeath() {
+        if (this.isPlayerSide) {
+            this.owner.hasBullet = true;
+        }
+    }
 }

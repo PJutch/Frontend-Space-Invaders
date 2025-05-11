@@ -14,8 +14,7 @@ export class Player {
     static speed = 2;
     xVelocity = 0;
 
-    shotCooldownRemaining = 0;
-    static shotCooldown = 60;
+    hasBullet = true;
 
     dead = false;
     isPlayerSide = true;
@@ -42,13 +41,9 @@ export class Player {
             this.x = this.sizeX / 2;
         }
 
-        if (isKeyDown['KeyW'] && this.shotCooldownRemaining <= 0) {
-            entities.push(new Bullet(this.x, this.y, true));
-            this.shotCooldownRemaining = Player.shotCooldown;
-        }
-
-        if (this.shotCooldownRemaining) {
-            --this.shotCooldownRemaining;
+        if (isKeyDown['KeyW'] && this.hasBullet) {
+            entities.push(new Bullet(this.x, this.y, true, this));
+            this.hasBullet = false;
         }
 
         for (let entity of entities) {

@@ -51,7 +51,7 @@ class Enemy {
         if (this.shotCooldown >= 0) {
             if (this.shotCooldownRemaining <= 0) {
                 this.shotCooldownRemaining = this.shotCooldown;
-                entities.push(new Bullet(this.x, this.y, false));
+                entities.push(new Bullet(this.x, this.y, false, this));
             } else {
                 this.shotCooldownRemaining -= enemySpeed;
             }
@@ -105,7 +105,7 @@ const spaceLeftX = width - enemiesInRow * spacePerEnemyX;
 function spawnEnemies() {
     spaceCovered = 0;
     enemiesMoveRight = true;
-    
+
     for (let i = 0; i < 3; ++i) {
         for (let j = 0; j < enemiesInRow; ++j) {
             let x = j * (enemyWidth + enemyGapX) + enemyWidth / 2;
