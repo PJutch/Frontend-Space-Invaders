@@ -33,23 +33,9 @@ class Enemy {
         this.sprite = sprite;
 
         this.shotCooldown = shotCooldown;
-        this.shotCooldownRemaining = this.shotCooldown / 2;
+        this.shotCooldownRemaining = Math.random() * this.shotCooldown;
 
         this.onDeathScore = onDeathScore;
-    }
-
-    canShoot() {
-        if (this.shotCooldown < 0) {
-            return false;
-        }
-
-        for (let entity of entities) {
-            if (entity != this && entity.y > this.y && areCollidingX(this, entity)
-             && entity.isSolid && !entity.isPlayerSide) {
-                return false;
-            }
-        }
-        return true;
     }
 
     update() {
@@ -62,7 +48,7 @@ class Enemy {
             }
         }
 
-        if (this.canShoot()) {
+        if (this.shotCooldown >= 0) {
             if (this.shotCooldownRemaining <= 0) {
                 this.shotCooldownRemaining = this.shotCooldown;
                 entities.push(new Bullet(this.x, this.y, false));
@@ -79,16 +65,22 @@ class Enemy {
     }
 }
 
+const lander1Sprite = document.getElementById("lander1");
+
+function makeLander1(x, y) {
+    return new Enemy(x, y, enemyWidth, 28, lander1Sprite, -1, 20);
+}
+
+const lander2Sprite = document.getElementById("lander2");
+
+function makeLander2(x, y) {
+    return new Enemy(x, y, enemyWidth, 32, lander2Sprite, -1, 20);
+}
+
 const shooterSprite = document.getElementById("shooter");
 
 function makeShooter(x, y) {
-    return new Enemy(x, y, enemyWidth, 28, shooterSprite, 180, 20);
-}
-
-const landerSprite = document.getElementById("lander");
-
-function makeLander(x, y) {
-    return new Enemy(x, y, enemyWidth, 32, landerSprite, -1, 10);
+    return new Enemy(x, y, 32, 32, shooterSprite, 90, 40);
 }
 
 function areThereEnemies() {
@@ -106,20 +98,25 @@ const enemyHeight = 32;
 const enemyGapX = 20;
 const enemyGapY = 10;
 
-function spawnEnemies() {
-    let spacePerEnemyX = enemyWidth + enemyGapX;
-    let enemiesInRow = Math.floor(width / spacePerEnemyX);
-    let spaceLeftX = width - enemiesInRow * spacePerEnemyX;
+const spacePerEnemyX = enemyWidth + enemyGapX;
+const enemiesInRow = Math.floor(width / spacePerEnemyX);
+const spaceLeftX = width - enemiesInRow * spacePerEnemyX;
 
+function spawnEnemies() {
+    spaceCovered = 0;
+    enemiesMoveRight = true;
+    
     for (let i = 0; i < 3; ++i) {
         for (let j = 0; j < enemiesInRow; ++j) {
-            let x = j * (enemyWidth + enemyGapX) + enemyWidth / 2 + spaceLeftX / 2;
+            let x = j * (enemyWidth + enemyGapX) + enemyWidth / 2;
             let y = enemyHeight / 2 + i * (enemyHeight + enemyGapY);
 
-            if (j == 2 || j == enemiesInRow - 3) {
-                entities.push(makeShooter(x, y));
+            if (i == 2) {
+                entities.push(makeLander1(x, y));
+            } else if (i == 1) {
+                entities.push(makeLander2(x, y));
             } else {
-                entities.push(makeLander(x, y));
+                entities.push(makeShooter(x, y));
             }
         }
     }
@@ -127,13 +124,13 @@ function spawnEnemies() {
 
 let enemySpeed = 0;
 let enemiesMoveRight = true;
+let spaceCovered = 0;
 
 function enemiesReachedBorder() {
     for (let entity of entities) {
         if (!entity.isPlayerSide && entity.isSolid) {
             if (enemiesMoveRight && getRight(entity) >= width 
             || !enemiesMoveRight && getLeft(entity) <= 0) {
-                console.log(entity);
                 return true;
             }
         }
@@ -155,17 +152,19 @@ export function updateEnemies() {
         spawnEnemies();
     }
 
-    if (enemiesReachedBorder()) {
+    if (enemiesReachedBottom()) {
+        gameover();
+    }
+
+    spaceCovered += enemySpeed;
+    if (spaceCovered >= spaceLeftX) {
         for (let entity of entities) {
             if (!entity.isPlayerSide && entity.isSolid) {
                 entity.y += enemyHeight;
             }
         }
         enemiesMoveRight = !enemiesMoveRight;
-    }
-
-    if (enemiesReachedBottom()) {
-        gameover();
+        spaceCovered = 0;
     }
 
     enemySpeed += 0.00001;
